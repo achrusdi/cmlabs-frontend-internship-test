@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Head -->
+    <div w3-include-html="/partials/head.html"></div>
+    <link href="/public/style.css" rel="stylesheet">
+    <script>
+        window.addEventListener('load', function () {
+            console.log('All content loaded!');
+            document.body.classList.add('loaded');
+            document.body.classList.remove('loading');
+        });
+    </script>
+</head>
+
+<body class="loading">
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <div w3-include-html="/partials/nav.html"></div>
+
+
+    <div class="container mt-5">
+        <h3 style="text-transform: capitalize" class="display-4 font-weight-bold" id="foodCategory"><strong></strong>
+        </h3>
+        <hr>
+        <div class="row" id="foodDetail">
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div w3-include-html="/partials/scripts.html"></div>
+    <script src="/include.js"></script>
+    <script src="/public/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const foodCategory = urlParams.get('category');
+            const foodDetail = document.getElementById('foodDetail');
+
+            if (foodCategory) {
+                document.getElementById('foodCategory').textContent = `${foodCategory} meals`;
+                fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${foodCategory}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const meals = data.meals;
+
+                        meals.forEach(meal => {
+                            const foodCard = `
+                                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                                    <a href="meal-detail.html?mealId=${meal.idMeal}" class="text-decoration-none">
+                                        <div class="card food-card">
+                                            <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="card-img-top">
+                                            <div class="card-body">
+                                                <h5 class="text-center">${meal.strMeal}</h5>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `;
+                            foodDetail.innerHTML += foodCard;
+                        });
+                    })
+                    .catch(error => console.error('Error fetching the data:', error));
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Head -->
+    <div w3-include-html="/partials/head.html"></div>
+    <link href="/public/style.css" rel="stylesheet">
+    <script>
+        window.addEventListener('load', function () {
+            console.log('All content loaded!');
+            document.body.classList.add('loaded');
+            document.body.classList.remove('loading');
+        });
+    </script>
+</head>
+
+<body class="loading">
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <div w3-include-html="/partials/nav.html"></div>
+
+    <div class="jumbotron text-center py-5" style="background-color: #f9fafb;">
+        <h3 style="text-transform: capitalize" class="display-4">see all delicious foods</h3>
+        <p class="lead">mealapp API website</p>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row" id="foodContainer">
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div w3-include-html="/partials/scripts.html"></div>
+    <script src="/include.js"></script>
+    <script src="/public/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const foodContainer = document.getElementById('foodContainer');
+
+            fetch('https://www.themealdb.com/api/json/v1/1/categories.php')
+                .then(response => response.json())
+                .then(data => {
+                    const categories = data.categories;
+                    categories.forEach(category => {
+                        const foodCard = `
+                            <div class="col-md-3 mb-4">
+                                <a href="category-detail.html?category=${category.strCategory}" class="text-decoration-none">
+                                    <div class="card food-card">
+                                        <img src="${category.strCategoryThumb}" alt="${category.strCategory}">
+                                        <div class="card-body">
+                                            <h5>${category.strCategory}</h5>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        `;
+                        foodContainer.innerHTML += foodCard;
+                    });
+                })
+                .catch(error => console.error('Error fetching the data:', error));
+        });
+
+    </script>
+</body>
+
+</html>
